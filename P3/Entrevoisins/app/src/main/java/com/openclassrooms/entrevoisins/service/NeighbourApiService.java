@@ -30,17 +30,17 @@ public interface NeighbourApiService {
     void createNeighbour(Neighbour neighbour);
 
     Neighbour getNeighbourPosition(int position);
-   //List<Neighbour> getFavorites();
+    List<Neighbour> getFavorites();
 
     /**
      * Add a Favorite
      * @param neighbour
      */
-   // void addToFavorite(Neighbour neighbour);
+   void addToFavorite(Neighbour neighbour);
 
     /**
      * Remove a favorite from the list
      * @param neighbour
      */
-    //void deleteFavorite(Neighbour neighbour);
+    void deleteFavorite(Neighbour neighbour);
 }

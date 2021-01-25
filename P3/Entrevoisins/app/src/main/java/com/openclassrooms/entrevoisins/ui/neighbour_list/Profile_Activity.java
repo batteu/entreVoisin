@@ -25,9 +25,9 @@ import butterknife.OnClick;
 
 public class Profile_Activity extends AppCompatActivity {
 
-    private int mPosition;
-    private NeighbourApiService mApiService = DI.getNeighbourApiService();
-    private Neighbour mNeighbourSelected;
+
+    private NeighbourApiService mApiService;
+
 
 
     /**
@@ -46,7 +46,7 @@ public class Profile_Activity extends AppCompatActivity {
     public TextView mDescription;
 
     @BindView(R.id.buttonFavoris)
-    public FloatingActionButton AddFavoris;
+    public FloatingActionButton mButtonFavoris;
 
     @BindView(R.id.adresse)
     public TextView mAdresse;
@@ -59,48 +59,53 @@ public class Profile_Activity extends AppCompatActivity {
         finish();
     }
 
+    @BindView(R.id.facebook)
+    public TextView mFacebook;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_);
         ButterKnife.bind(this);
+        mApiService = DI.getNeighbourApiService();
+        displayProfile();
+        actionFavorisButton();
+    }
 
-        Intent profileIntent = getIntent();
+    private  void displayProfile(){
+        if(getIntent().hasExtra("Neighbour")){
+            Neighbour neighbour = getIntent().getExtras().getParcelable("Neighbour");
+            Glide.with(this)
+                    .load(neighbour.getAvatarUrl())
+                    .into(mImageProfile);
 
-        mPosition = profileIntent.getIntExtra("POSITION", 0);
+            mNomProfile.setText(neighbour.getName());
+            mCadreNomProfile.setText(neighbour.getName());
+            mAdresse.setText(neighbour.getAddress());
+            mNumeroTelephone.setText(neighbour.getPhoneNumber());
+            mDescription.setText(neighbour.getAboutMe());
+            mFacebook.setText("www.facebook.fr/" + neighbour.getName());
+        }
+    }
 
-        mNeighbourSelected = mApiService.getNeighbourPosition(mPosition);
+    private void actionFavorisButton(){
+        if(getIntent().hasExtra("Neighbour")){
+            Neighbour neighbour = getIntent().getParcelableExtra("Neighbour");
 
-
-        /** Affichage de la photo de Profile*/
-        Glide.with(this).load(mNeighbourSelected.getAvatarUrl()).into(mImageProfile);
-
-        mNomProfile.setText(mNeighbourSelected.getName());
-        mCadreNomProfile.setText(mNeighbourSelected.getName());
-        mAdresse.setText(mNeighbourSelected.getAddress());
-        mNumeroTelephone.setText(mNeighbourSelected.getPhoneNumber());
-        mDescription.setText(mNeighbourSelected.getAboutMe());
-
-
-        /**Bouton ADDFavoris*/
-        if (mNeighbourSelected.getFavoris())
-            AddFavoris.setImageResource(R.drawable.ic_star_white_24dp);
-        else
-            AddFavoris.setImageResource(R.drawable.ic_star_border_white_24dp);
-
-        AddFavoris.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mNeighbourSelected.getFavoris()) {
-                    Toast.makeText(Profile_Activity.this, "Ajouté aux favoris", Toast.LENGTH_SHORT).show();
-                    AddFavoris.setImageResource(R.drawable.ic_star_white_24dp);
-                    mNeighbourSelected.setFavoris(true);
-                } else {
-                    Toast.makeText(Profile_Activity.this, "Supprimé des favoris", Toast.LENGTH_SHORT).show();
-                    AddFavoris.setImageResource(R.drawable.ic_star_border_white_24dp);
-                    mNeighbourSelected.setFavoris(false);
-                }
+            if(mApiService.getFavorites().contains(neighbour)){
+                mButtonFavoris.setImageResource(R.drawable.ic_star_white_24dp);
             }
-        });
+            mButtonFavoris.setOnClickListener(v -> {
+                if(!mApiService.getFavorites().contains(neighbour)) {
+                    mApiService.addToFavorite(neighbour);
+                    mButtonFavoris.setImageResource(R.drawable.ic_star_white_24dp);
+                    Toast.makeText(this, "ajouté aux Favoris", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(this,"Déja Favoris", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }

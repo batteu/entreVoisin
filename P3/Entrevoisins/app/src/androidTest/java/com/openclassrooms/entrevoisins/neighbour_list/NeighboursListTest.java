@@ -31,7 +31,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 public class NeighboursListTest {
 
     // This is fixed
-    private static int ITEMS_COUNT = 12;
+    private static final int ITEMS_COUNT = 12;
 
     private ListNeighbourActivity mActivity;
 

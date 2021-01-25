@@ -1,5 +1,7 @@
 package com.openclassrooms.entrevoisins.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -9,12 +11,7 @@ import java.util.Objects;
 /**
  * Model object representing a Neighbour
  */
-public class Neighbour {
-
-    /** Boolean setFavoris Voisin */
-
-    public  Boolean favoris = false;
-
+public class Neighbour  implements Parcelable {
 
 
     /** Identifier */
@@ -42,29 +39,14 @@ public class Neighbour {
      * @param avatarUrl
      */
     public Neighbour(long id, String name, String avatarUrl, String address,
-                     String phoneNumber, String aboutMe, Boolean favoris) {
+                     String phoneNumber, String aboutMe) {
         this.id = id;
         this.name = name;
         this.avatarUrl = avatarUrl;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.aboutMe = aboutMe;
-        
 
-        this.favoris = favoris;
-
-    }
-
-
-
-
-    public Boolean getFavoris() {
-        return favoris;
-    }
-
-    public void setFavoris(Boolean favoris) {
-        this.favoris = favoris;
-        Log.d("test", "clic test fav");
     }
 
     public long getId() {
@@ -115,6 +97,30 @@ public class Neighbour {
         this.aboutMe = aboutMe;
     }
 
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(name);
+        dest.writeString(avatarUrl);
+        dest.writeString(address);
+        dest.writeString(phoneNumber);
+        dest.writeString(aboutMe);
+    }
+    protected Neighbour(Parcel in){
+        id = in.readLong();
+        name = in.readString();
+        avatarUrl=in.readString();
+        address=in.readString();
+        phoneNumber=in.readString();
+        aboutMe=in.readString();
+    }
+    public static final Creator<Neighbour> CREATOR = new Creator<Neighbour>() {
+        @Override
+        public Neighbour createFromParcel(Parcel in) { return new Neighbour(in);}
+
+        @Override
+        public Neighbour[] newArray(int size) { return new Neighbour[0]; }
+    };
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -127,4 +133,8 @@ public class Neighbour {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public int describeContents(){return 0;}
+
+
 }
